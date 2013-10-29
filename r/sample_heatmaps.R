@@ -77,7 +77,7 @@ ggplot(w.melt, aes(x = as.factor(w.melt[[2]]),
 
 
 ## heatmap with heatmap.2
-plot_heatmap2 <- function(df, sort.rows = NULL, ...) {
+plot_heatmap2 <- function(df, sort.rows = NULL, col.chr = FALSE, ...) {
   if (require('gplots', quietly=TRUE)){
     library(gplots)
     
@@ -88,11 +88,55 @@ plot_heatmap2 <- function(df, sort.rows = NULL, ...) {
       df <- df[index_by_chr(v=rownames(df)),]
     }
     
-    heatmap.2(as.matrix(t(df)), Rowv=FALSE, Colv=FALSE, dendrogram="none",
-              scale="none", trace="none", sepwidth=c(0.02,0.01),
-              colsep=1:dim(df)[1], rowsep=1:dim(df)[2], 
-              key=FALSE, col=c("black", "grey", "chartreuse3"), 
-              ...)
+    if (col.chr) {
+      c.col <- c("#FF0000", #red
+                 "#00FFFF", #cyan
+                 "#0000FF", #blue
+                 "#3090C7", #Blue Ivy
+                 "#ADD8E6", #lightblue
+                 "#800080", #purple
+                 "#FFFF00", #yellow
+                 "#00FF00", #lime
+                 "#FF00FF", #magenta
+                 "#C0C0C0", #silver
+                 "#808080", #gray
+                 "#000000", #black
+                 "#FFA500", #orange
+                 "#F87217", #Pumpkin Orange
+                 "#800000", #maroon
+                 "#008000", #green 
+                 "#808000", #olive
+                 "#3B9C9C", #Dark Turquoise
+                 "#89C35C", #green peas
+                 "#EDDA74", #Goldenrod
+                 "#DEB887", #BurlyWood
+                 "#C48189", #Pink Bow
+                 "#F9B7FF", #Blossom Pink
+                 "#0000A0" #darkblue
+      )
+      chr <- sub("_.*", "", rownames(df))
+      chr.col <- sapply(chr, function(c){
+        if ((c == "X") | (c == "x")) { c <- 23 }
+        if ((c == "Y") | (c == "y")) { c <- 24 }
+        c.col[as.integer(c)]}, 
+                        USE.NAMES=FALSE)
+      
+      heatmap.2(as.matrix(t(df)), Rowv=FALSE, Colv=FALSE, dendrogram="none",
+                ColSideColors=chr.col,
+                scale="none", trace="none", sepwidth=c(0.02,0.01),
+                colsep=1:dim(df)[1], rowsep=1:dim(df)[2], 
+                key=FALSE, col=c("black", "grey", "chartreuse3"),
+                ...)
+      legend("left", legend=c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
+                                 16,17,18,19,20,21,22,"X","Y"), 
+             fill=c.col, border=FALSE, bty="n", y.intersp = 0.7, cex=0.7)
+    } else {
+      heatmap.2(as.matrix(t(df)), Rowv=FALSE, Colv=FALSE, dendrogram="none",
+                scale="none", trace="none", sepwidth=c(0.02,0.01),
+                colsep=1:dim(df)[1], rowsep=1:dim(df)[2], 
+                key=FALSE, col=c("black", "grey", "chartreuse3"),
+                ...)
+    }
   } else {
     warning('error -- package "gplots" is not available')
   }
@@ -100,3 +144,4 @@ plot_heatmap2 <- function(df, sort.rows = NULL, ...) {
 plot_heatmap2(w.norm)                   #unordered
 plot_heatmap2(w.norm, sort.rows="data") #order by data
 plot_heatmap2(w.norm, sort.rows="chr")  #order by chr
+plot_heatmap2(w.norm, sort.rows="data", col.chr=TRUE)
