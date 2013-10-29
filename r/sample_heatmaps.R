@@ -39,7 +39,12 @@ index_by_chr <- function(v, sep.delim = "_"){
     return(1:length(v))
   }
 }
-
+merge_df <- function(x, y, suffix.x, suffix.y) {
+  df <- merge(x, y, by=0, suffixes=c(suffix.x, suffix.y))
+  rownames(df) <- df[,1]
+  df <- df[,-1]
+  return(df)
+}
 ##==========================================================================
 ## Generating random data 
 rand_df <- function(nrow, ncol) {
@@ -57,9 +62,9 @@ c <- rand_df(26, 3)
 col_names <- c("N", "T", "X1")
 colnames(w) <- col_names
 colnames(c) <- col_names
-rownames(w) <- c("1_a", "1_b", "10_c", "10_d", "11_e", "11_f", "12_g", "X_h", "13_i", "13_j", "14_k", 
-                 "15_l", "16_m", "16_n", "2_o", "2_p", "21_q", "22_r", "3_s", "5_t", "2_u", "9_V",
-                 "X_w", "X_x", "X_y", "Y_z")
+# rownames(w) <- c("1_a", "1_b", "10_c", "10_d", "11_e", "11_f", "12_g", "X_h", "13_i", "13_j", "14_k", 
+#                  "15_l", "16_m", "16_n", "2_o", "2_p", "21_q", "22_r", "3_s", "5_t", "2_u", "9_V",
+#                  "X_w", "X_x", "X_y", "Y_z")
 w.melt <- normalize_df(w, melt = TRUE)
 w.norm <- normalize_df(w)
 
