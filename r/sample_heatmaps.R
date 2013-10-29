@@ -60,9 +60,20 @@ ggplot(w.melt, aes(x = as.factor(w.melt[[2]]),
 
 
 ## heatmap with heatmap.2
-w.norm <- w.norm[order(w.norm[,1], w.norm[,2], w.norm[,3], decreasing=FALSE),]
-library(gplots)
-heatmap.2(as.matrix(t(w.norm)), Rowv=NULL, Colv=NULL, 
-          scale="none", trace="none", sepwidth=c(0.05,0.01),
-          colsep=1:dim(w.norm)[1], rowsep=1:dim(w.norm)[2], 
-          key=FALSE, col=c("black", "grey", "chartreuse3"))
+plot_heatmap2 <- function(df, sort.rows = FALSE, ...) {
+  if (require('gplots', quietly=TRUE)){
+    library(gplots)
+    if (sort.rows) {
+      df <- df[order(df[,1], df[,2], df[,3], decreasing=FALSE),]
+    }
+    
+    heatmap.2(as.matrix(t(df)), Rowv=FALSE, Colv=FALSE, dendrogram="none",
+              scale="none", trace="none", sepwidth=c(0.02,0.01),
+              colsep=1:dim(df)[1], rowsep=1:dim(df)[2], 
+              key=FALSE, col=c("black", "grey", "chartreuse3"), 
+              ...)
+  } else {
+    warning('error -- package "gplots" is not available')
+  }
+}
+plot_heatmap2(w.norm, sort.rows=TRUE)
