@@ -64,7 +64,7 @@ plot_heatmap2 <- function(df, sort.rows = FALSE, ...) {
   if (require('gplots', quietly=TRUE)){
     library(gplots)
     if (sort.rows) {
-      df <- df[order(df[,1], df[,2], df[,3], decreasing=FALSE),]
+      for (i in dim(df)[2]:1) { df <- df[order(df[,i], decreasing=FALSE),] }
     }
     
     heatmap.2(as.matrix(t(df)), Rowv=FALSE, Colv=FALSE, dendrogram="none",
