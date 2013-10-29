@@ -77,11 +77,15 @@ ggplot(w.melt, aes(x = as.factor(w.melt[[2]]),
 
 
 ## heatmap with heatmap.2
-plot_heatmap2 <- function(df, sort.rows = FALSE, ...) {
+plot_heatmap2 <- function(df, sort.rows = NULL, ...) {
   if (require('gplots', quietly=TRUE)){
     library(gplots)
-    if (sort.rows) {
+    
+    if (is.null(sort.rows)) {sort.rows = FALSE}
+    if (sort.rows == "data") {
       for (i in dim(df)[2]:1) { df <- df[order(df[,i], decreasing=FALSE),] }
+    } else if (sort.rows == "chr") {
+      df <- df[index_by_chr(v=rownames(df)),]
     }
     
     heatmap.2(as.matrix(t(df)), Rowv=FALSE, Colv=FALSE, dendrogram="none",
@@ -93,7 +97,6 @@ plot_heatmap2 <- function(df, sort.rows = FALSE, ...) {
     warning('error -- package "gplots" is not available')
   }
 }
-plot_heatmap2(w.norm, sort.rows=TRUE) #order by data
-plot_heatmap2(w.norm)                 #unordered
-
-plot_heatmap2(normalize_df(w[index_by_chr(rownames(w)),])) #ordered by chr
+plot_heatmap2(w.norm)                   #unordered
+plot_heatmap2(w.norm, sort.rows="data") #order by data
+plot_heatmap2(w.norm, sort.rows="chr")  #order by chr
