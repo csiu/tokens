@@ -25,6 +25,21 @@ normalize_df <- function(df, melt = FALSE) {
     return(df)
   }
 }
+index_by_chr <- function(v, sep.delim = "_"){
+  ord <- c("^0?[0-9]", "^1[0-9]", "^2[0-9]", "^[Xx]", "^[Yy]")
+  ord <- sapply(ord, function(o){paste(o, sep.delim, sep="")}, USE.NAMES=FALSE)
+  new_v <- NULL
+  for (i in ord) {
+    new_v <- c(new_v, sort(grep(i, v, value=TRUE)))
+  }
+  if (length(v) == length(new_v)) {
+    return(match(new_v, v))
+  } else {
+    warning('Error in sorting; returning old list')
+    return(1:length(v))
+  }
+}
+
 ##==========================================================================
 ## Generating random data 
 rand_df <- function(nrow, ncol) {
@@ -78,4 +93,7 @@ plot_heatmap2 <- function(df, sort.rows = FALSE, ...) {
     warning('error -- package "gplots" is not available')
   }
 }
-plot_heatmap2(w.norm, sort.rows=TRUE)
+plot_heatmap2(w.norm, sort.rows=TRUE) #order by data
+plot_heatmap2(w.norm)                 #unordered
+
+plot_heatmap2(normalize_df(w[index_by_chr(rownames(w)),])) #ordered by chr
