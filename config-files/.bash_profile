@@ -18,5 +18,5 @@ alias tree="find . | awk -v pwd=$PWD 'BEGIN {print pwd}                 \
 bind '"\e[A":history-search-backward'
 bind '"\e[B":history-search-forward'
 
-## customize prompt
-export PS1="[\d \t]\h:\w/$ "
+## customize prompt with color
+export PS1="\[\033[01;31m\][\d \t]\h:\w/$ \[\033[0;00m\]"
