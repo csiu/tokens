@@ -6,7 +6,7 @@ Function:
 Options:
 -h         print help message 
 -v         verbose; explain what is being done
--x
+-x VARX    ...
 """
 
 ## if STDIN does not exist or is empty; print usage & exit
