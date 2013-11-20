@@ -8,7 +8,7 @@ usage = """ %s [options] -i INFILE
 """ % (__file__)
 
 def main():
-    parser = argparse.ArgumentParser(description=usage)
+    parser = argparse.ArgumentParser(description=usage, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-i', '--infile', dest='infile',
                         action='store',
                         default=None,
