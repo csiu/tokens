@@ -1,5 +1,9 @@
 # Author:  Celia
 # Created: 20/11/13
+
+# Example of using matplotlib to create boxplot:
+# http://matplotlib.org/examples/pylab_examples/boxplot_demo2.html
+
 import argparse
 import sys
 import os
