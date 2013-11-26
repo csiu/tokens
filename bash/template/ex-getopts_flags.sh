@@ -9,6 +9,9 @@ Options:
 -x VARX     ...
 """
 
+## print usage if no args
+if [ $# == 0 ]; then echo "${USAGE}" && exit 1 ; fi
+
 ## user can pass args in any order using flags
 while getopts hi:x: option
 do
