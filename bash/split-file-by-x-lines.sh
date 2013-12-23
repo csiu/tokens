@@ -44,4 +44,6 @@ do
     esac
 done
 
+## 1 line command needed to perform function
+## before use, need to specify 'f' and 'skip'
 s=$(expr $skip - 1); start=1; for i in $(seq 0 $(expr $(wc -l $f | sed 's/^[ \t]*//' | cut -d' ' -f1) / $skip)) ; do end=$(expr $start + $s) ; sed -n "$start,${end}p" $f > $f.$i; start=$(expr $end + 1) ; done
