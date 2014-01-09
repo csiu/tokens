@@ -1,5 +1,4 @@
 name_tab () {
     TEXT=$1
-    echo -e "\033];${TEXT}\007"
+    export PROMPT_COMMAND='echo -ne "\033]0;${TEXT}\007"'
 }
-
