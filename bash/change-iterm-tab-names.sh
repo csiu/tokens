@@ -1,2 +1,5 @@
-TEXT="this is tab text"
-echo -e "\033];${TEXT}\007"
+name_tab () {
+    TEXT=$1
+    echo -e "\033];${TEXT}\007"
+}
+
