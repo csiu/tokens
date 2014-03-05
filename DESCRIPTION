@@ -1,0 +1,11 @@
+Package: scatplot
+Title: ScatterPlotting
+Description:
+Version: 0.1
+Author: Celia Siu <xcsiux@gmail.com>
+Maintainer: Celia Siu <xcsiux@gmail.ca>
+License: MIT
+Depends:
+    ggplot2
+Collate:
+    'ScatPlot.R'
