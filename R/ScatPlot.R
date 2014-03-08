@@ -31,9 +31,14 @@ scatplot <- function(xfile, yfile, xdescript, ydescript, filename = NULL){
   ## load data
   xdat <- read.delim(file=xfile, row.names=1)
   ydat <- read.delim(file=yfile, row.names=1)
-
+  
   ## individual run data -> 'run.pairs'
   runs <- intersect(colnames(xdat), colnames(ydat))
+  
+  ## check for presence of common column between xdat, ydat
+  if (length(runs) == 0){
+    stop("No common column between the two matrices")
+  }
   runs.pairs <- list()
   for (r in runs) {
     runs.pairs[[r]] <- data.frame(merge(xdat[r], ydat[r], by=0, 
