@@ -4,18 +4,21 @@
 #' @param yfile path/to/matrix2
 #' @param xdescript description of \code{xfile}; don't include whitespace
 #' @param ydescript description of \code{yfile}; don't include whitespace
+#' @param filename specify output filename
+#' @param ignorecolname logical; ignore colname matching of \code{xfile, yfile}? 
+#' If \code{TRUE}, the number of columns between the two files should equal
 #' 
 #' @details \code{scatplot}
 #' The purpose of this function is to directly compare -- by scatterplotting -- 
 #' the values of corresponding column(s) in two matrices.
-#' The matrices from \code{xfile} and \code{yfile} 
-#' should therefore contain the same row and column names. 
+#' The matrices from \code{xfile} and \code{yfile} (when \code{ignorecolname = FALSE})
+#' should therefore contain at least 1 column with the same row and column name. 
 #' Results will be send to a pdf file.
 #' 
 #' @examples scatplot(xfile = "m1_wholegen.txt.", yfile = "m1_custom.txt", xdescript = "wholegen", ydescript = "custom")
 #' 
 #' @export
-scatplot <- function(xfile, yfile, xdescript, ydescript, filename = NULL){
+scatplot <- function(xfile, yfile, xdescript, ydescript, filename = NULL, ignorecolname = FALSE){
   ## dependencies
   require(ggplot2)
   
@@ -29,22 +32,35 @@ scatplot <- function(xfile, yfile, xdescript, ydescript, filename = NULL){
   }
   
   ## load data
-  xdat <- read.delim(file=xfile, row.names=1)
-  ydat <- read.delim(file=yfile, row.names=1)
+  if (ignorecolname) {is.check.colname=FALSE} else {is.check.colname=TRUE}
+  xdat <- read.delim(file=xfile, row.names=1, check.names=is.check.colname)
+  ydat <- read.delim(file=yfile, row.names=1, check.names=is.check.colname)
   
-  ## individual run data -> 'run.pairs'
-  runs <- intersect(colnames(xdat), colnames(ydat))
-  
-  ## check for presence of common column between xdat, ydat
-  if (length(runs) == 0){
-    stop("No common column between the two matrices")
-  }
-  runs.pairs <- list()
-  for (r in runs) {
-    runs.pairs[[r]] <- data.frame(merge(xdat[r], ydat[r], by=0, 
-                                        suffixes=c(sprintf(".%s", xdescript), 
-                                                   sprintf(".%s", ydescript))), 
-                                  row.names=1)
+  if (!ignorecolname) {
+    ## individual run data -> 'run.pairs'
+    runs <- intersect(colnames(xdat), colnames(ydat))
+    
+    ## check for presence of common column between xdat, ydat
+    if (length(runs) == 0){
+      stop("No common column between the two matrices")
+    }
+    runs.pairs <- list()
+    for (r in runs) {
+      runs.pairs[[r]] <- data.frame(merge(xdat[r], ydat[r], by=0, 
+                                          suffixes=c(sprintf(".%s", xdescript), 
+                                                     sprintf(".%s", ydescript))), 
+                                    row.names=1)
+    }
+  } else {
+    if (dim(xdat)[2] != dim(ydat)[2]) {
+      stop("Number of columns differ between the two matrices")
+    }
+    runs <- seq(1, dim(ydat)[2])
+    runs.pairs <- list()
+    for (r in runs){
+      runs.pairs[[r]] <- data.frame(merge(subset(xdat, select=r), subset(ydat, select=r), by=0), 
+                                    row.names=1)
+    } 
   }
   
   ## overall run data -> 'dat.all'
@@ -52,7 +68,7 @@ scatplot <- function(xfile, yfile, xdescript, ydescript, filename = NULL){
   dat.all <- NULL
   for (id in runs) {
     names(dat[[id]]) <- NULL
-    dat.all <- rbind(dat.all, cbind(dat[[id]], id))
+    dat.all <- rbind(dat.all, cbind(dat[[id]], as.character(id)))
   }
   names(dat.all) <- c(xdescript, ydescript, "id")
   
