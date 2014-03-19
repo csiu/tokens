@@ -67,8 +67,14 @@ scatplot <- function(xfile, yfile, xdescript, ydescript, filename = NULL, ignore
   dat <- runs.pairs
   dat.all <- NULL
   for (id in runs) {
+    if (ignorecolname) {
+      legend.id <- colnames(dat[[id]])[2]
+    } else{
+      legend.id <- as.character(id)  
+    }
+    
     names(dat[[id]]) <- NULL
-    dat.all <- rbind(dat.all, cbind(dat[[id]], as.character(id)))
+    dat.all <- rbind(dat.all, cbind(dat[[id]], legend.id))
   }
   names(dat.all) <- c(xdescript, ydescript, "id")
   
