@@ -100,6 +100,7 @@ umask ${UMASK}
 
 cat ${SAMPLE} | while read s ; do
     WD=$PWD
+    SCRIPTS_TO_QSUB=""
 
     ## Job01: Extract fastq
     BAM=${ORIGINAL_BAMDIR}/${s}.bam
