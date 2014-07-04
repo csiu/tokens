@@ -191,7 +191,7 @@ cat ${SAMPLE} | while read s ; do
 
     ID=j10flagstat${s}
     HOLD_JID=j07dups${s}
-    CMD="{SAMTOOLS} flagstat ${DUPSFLAG_BAM} > ${FLAGSTAT_BAM}"
+    CMD="${SAMTOOLS} flagstat ${DUPSFLAG_BAM} > ${FLAGSTAT_BAM}"
     create_job_script
     add_script_to_qsub
 
