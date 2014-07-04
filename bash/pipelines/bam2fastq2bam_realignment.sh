@@ -128,9 +128,11 @@ cat ${SAMPLE} | while read s ; do
     add_script_to_qsub
 
     ## Job03: generate alignment (paired ended)
+    SAM=${OUTDIR}/${s}_${BUILD}.sam
+
     ID=j03sampe${s}
     HOLD_JID=j02Aaln${s},j02Baln${s}
-    CMD="${BWA} sampe ${REFERENCE} ${FAI1} ${FAI2} ${FQ1} ${FQ2} > ${OUTDIR}/${s}_${BUILD}.sam"
+    CMD="${BWA} sampe ${REFERENCE} ${FAI1} ${FAI2} ${FQ1} ${FQ2} > ${SAM}"
     create_job_script
     add_script_to_qsub
 
@@ -142,44 +144,54 @@ cat ${SAMPLE} | while read s ; do
     add_script_to_qsub
 
     ## Job05: Creating bam file
+    UNSRT_BAM=${OUTDIR}/${s}_${BUILD}.unsrt.bam
+
     ID=j05createBam${s}
     HOLD_JID=j03sampe${s}
-    CMD="${SAMTOOLS} view -S ${OUTDIR}/${s}_${BUILD}.sam -b > ${OUTDIR}/${s}_${BUILD}.unsrt.bam"
+    CMD="${SAMTOOLS} view -S ${SAM} -b > ${UNSRT_BAM}"
     create_job_script
     add_script_to_qsub
 
     ## Job06: Sorting bam file
+    SRT_BAM_PREFIX=${OUTDIR}/${s}_${BUILD}.srt
+    SRT_BAM=${SRT_BAM_PREFIX}.bam
+
     ID=j06sort${s}
     HOLD_JID=j05createBam${s}
-    CMD="${SAMTOOLS} sort ${OUTDIR}/${s}_${BUILD}.unsrt.bam ${OUTDIR}/${s}_${BUILD}.srt"
+    CMD="${SAMTOOLS} sort ${UNSRT_BAM} ${SRT_BAM_PREFIX}"
     create_job_script
     add_script_to_qsub
 
     ## Job07: Marking duplicates
+    DUPSFLAG_BAM=${OUTDIR}/${s}_${BUILD}_dupsFlagged.bam
+    PICARD_METRICS_FILE=${OUTDIR}/${s}_${BUILD}.paired.metrics.txt
+
     ID=j07dups${s}
     HOLD_JID=j06sort${s}
-    CMD="${JAVA} -Xmx3062M -jar ${PICARD}/MarkDuplicates.jar INPUT=${OUTDIR}/${s}_${BUILD}.srt.bam OUTPUT=${OUTDIR}/${s}_${BUILD}_dupsFlagged.bam METRICS_FILE=${OUTDIR}/${s}_${BUILD}.paired.metrics.txt ASSUME_SORTED=true READ_NAME_REGEX=${PICARD_REGEX} OPTICAL_DUPLICATE_PIXEL_DISTANCE=16 VALIDATION_STRINGENCY=LENIENT TMP_DIR=${DUP_TMPDIR}"
+    CMD="${JAVA} -Xmx3062M -jar ${PICARD}/MarkDuplicates.jar INPUT=${SRT_BAM} OUTPUT=${DUPSFLAG_BAM} METRICS_FILE=${PICARD_METRICS_FILE} ASSUME_SORTED=true READ_NAME_REGEX=${PICARD_REGEX} OPTICAL_DUPLICATE_PIXEL_DISTANCE=16 VALIDATION_STRINGENCY=LENIENT TMP_DIR=${DUP_TMPDIR}"
     create_job_script
     add_script_to_qsub
 
     ## Job08: Removing tmp bam files
     ID=j08rmTmpBam${s}
     HOLD_JID=j07dups${s}
-    CMD="rm -v ${OUTDIR}/${s}_${BUILD}.sam ${OUTDIR}/${s}_${BUILD}.unsrt.bam ${OUTDIR}/${s}_${BUILD}.srt.bam"
+    CMD="rm -v ${SAM} ${UNSRT_BAM} ${SRT_BAM}"
     create_job_script
     add_script_to_qsub
 
     ## Job09: Indexing bam
     ID=j09index${s}
     HOLD_JID=j07dups${s}
-    CMD="${SAMTOOLS} index ${OUTDIR}/${s}_${BUILD}_dupsFlagged.bam"
+    CMD="${SAMTOOLS} index ${DUPSFLAG_BAM}"
     create_job_script
     add_script_to_qsub
 
     ## Job10: Flagstat
+    FLAGSTAT_BAM=${DUPSFLAG_BAM}.flagstat
+
     ID=j10flagstat${s}
     HOLD_JID=j07dups${s}
-    CMD="{SAMTOOLS} flagstat ${OUTDIR}/${s}_${BUILD}_dupsFlagged.bam > ${OUTDIR}/${s}_${BUILD}_dupsFlagged.bam.flagstat"
+    CMD="{SAMTOOLS} flagstat ${DUPSFLAG_BAM} > ${FLAGSTAT_BAM}"
     create_job_script
     add_script_to_qsub
 
