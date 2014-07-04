@@ -196,6 +196,9 @@ cat ${SAMPLE} | while read s ; do
     create_job_script
     add_script_to_qsub
 
-    echo $SCRIPTS_TO_QSUB | tr ' ' '\n' | awk '{print "qsub "$0}'
+
+    for script in $SCRIPTS_TO_QSUB ; do
+	echo "qsub $script"
+    done
 
 done > MASTERrun.${BUILD}_realignment.sh.${NOW}
