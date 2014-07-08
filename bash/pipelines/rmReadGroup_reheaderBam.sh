@@ -104,6 +104,13 @@ cat ${SAMPLE} | while read s ; do
     create_job_script
     add_script_to_qsub
 
+    ## Job04: Index bam file
+    ID=j04reIndex${s}
+    HOLD_JID=j03reheader${s}
+    CMD="${SAMTOOLS} index ${NEW_BAM}"
+    create_job_script
+    add_script_to_qsub
+
 
     for script in $SCRIPTS_TO_QSUB ; do
 	echo "qsub $script"
