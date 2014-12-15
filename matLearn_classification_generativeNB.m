@@ -72,6 +72,7 @@ for r = 1:nRow
             catch
                 % for when feature class of test set is not in training set
                 p = p * 0;
+                break
             end
         end
         posterior(c) = p;
