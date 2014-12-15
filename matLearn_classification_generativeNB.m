@@ -18,6 +18,8 @@ priors = containers.Map;
 
 %%% train classifier
 for C = classes'
+    features = struct('fclass', cell(1));
+    
     % subset X samples by class=C
     X_c = X(ismember(y, C),:);
     nTrain_c = size(X_c,1);
