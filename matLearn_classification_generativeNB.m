@@ -32,12 +32,7 @@ for C = classes'
         counter = 0;
         fclass = 0;
         while counter < nTrain_c
-            fcounts = 0;
-            for n = 1:nTrain_c
-                if X_c(n,f) == fclass
-                    fcounts = fcounts + 1;
-                end
-            end
+            fcounts = size(find(X_c(:,f)==fclass),1);
             features(f).fclass(fclass+1) = fcounts / nTrain_c;
             
             counter = counter + fcounts;
