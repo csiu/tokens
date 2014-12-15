@@ -19,22 +19,22 @@ priors = containers.Map;
 %%% train classifier
 for C = classes'
     features = struct('fclass', cell(1));
-    
+
     % subset X samples by class=C
     X_c = X(ismember(y, C),:);
     nTrain_c = size(X_c,1);
-    
+
     % save prior P(class=C)
     priors(int2str(C)) = nTrain_c / nTrain;
-    
-    % calculate and save P(x=X_i|class=C) 
+
+    % calculate and save P(x=X_i|class=C)
     for f = 1:nFeatures
         counter = 0;
         fclass = 0;
         while counter < nTrain_c
             fcounts = size(find(X_c(:,f)==fclass),1);
             features(f).fclass(fclass+1) = fcounts / nTrain_c;
-            
+
             counter = counter + fcounts;
             fclass = fclass + 1;
         end
