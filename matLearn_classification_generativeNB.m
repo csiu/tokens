@@ -32,19 +32,19 @@ for C = classes'
     % save prior P(class=C)
     priors(int2str(C)) = nTrain_c / nTrain;
 
-    % calculate and save P(x=X_i|class=C)
-    for f = 1:nFeatures
+    % calculate and save P(x=X_j|class=C)
+    for j = 1:nFeatures
         counter = 0;
         fclass = 0;
         while counter < nTrain_c
-            fcounts = size(find(X_c(:,f)==fclass),1);
-            features(f).fclass(fclass+1) = fcounts / nTrain_c;
+            fcounts = size(find(X_c(:,j)==fclass),1);
+            features(j).fclass(fclass+1) = fcounts / nTrain_c;
 
             counter = counter + fcounts;
             fclass = fclass + 1;
         end
     end
-    % note: start at C+1 to include consideration of class 0
+    % note: start at C+1 for consideration of class=0
     likelihoods(C+1).features = features;
 end
 
@@ -61,24 +61,26 @@ function [yhat] = predict(model,Xhat)
 nClasses = size(model.classes,1);
 yhat = zeros(nRow,1);
 
-for r = 1:nRow
+for i = 1:nRow
     posterior = zeros(1, nClasses);
+    
+    % for each class, compute P(class=C)*P(x=X_j|class=C)
     for c = 1:nClasses
         C = model.classes(c);
         p = model.priors(int2str(C));
-        for f = 1:nCol
+        for j = 1:nCol
             try
-                p = p * model.likelihoods(C+1).features(f).fclass(Xhat(r,f)+1);
+                p = p * model.likelihoods(C+1).features(j).fclass(Xhat(i,j)+1);
             catch
-                % for when feature class of test set is not in training set
+                % for when test set feature label is not in training set
                 p = p * 0;
                 break
             end
         end
         posterior(c) = p;
     end
-    [~,i] = max(posterior);
-    yhat(r) = model.classes(i);
+    [~,index] = max(posterior);
+    yhat(i) = model.classes(index);
 end
 
 end
