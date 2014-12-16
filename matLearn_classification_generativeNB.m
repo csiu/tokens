@@ -63,7 +63,7 @@ yhat = zeros(nRow,1);
 
 for i = 1:nRow
     posterior = zeros(1, nClasses);
-    
+
     % for each class, compute P(class=C)*P(x=X_j|class=C)
     for c = 1:nClasses
         C = model.classes(c);
