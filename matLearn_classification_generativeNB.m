@@ -10,6 +10,11 @@ function [model] = matLearn_classification_generativeNB(X,y,options)
 % Authors:
 % 	- Celia Siu (2014)
 %
+% Details:
+%   - Both feature and class labels must be >= 0
+%   - To account for instances of class=0,
+%     'model.likelihoods' is indexed by 'class+1'
+%
 
 [nTrain, nFeatures] = size(X);
 classes = unique(y);
