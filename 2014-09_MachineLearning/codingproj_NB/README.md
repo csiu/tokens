@@ -1,4 +1,4 @@
-matLearn_classification_generativeNB.m
+[matLearn_classification_generativeNB.m](matLearn_classification_generativeNB.m)
 ======================================
 
 Perform classification using Naive Bayes
