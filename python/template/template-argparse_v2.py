@@ -5,8 +5,8 @@ import argparse
 import sys
 import os
 
-usage = """ %s [options] -i INFILE
-""" % (__file__)
+usage = """
+"""
 
 def main():
     print "Hello world"
