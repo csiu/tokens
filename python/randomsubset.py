@@ -23,7 +23,7 @@ if __name__ == '__main__':
   parser.add_argument('-i', '--infile', dest='infile',
                       required=True,
                       help='path to input file')
-  parser.add_argument('-n', dest='n',
+  parser.add_argument('-n', dest='n', type=int,
                       default=10,
                       help='number of lines to pull')
 
