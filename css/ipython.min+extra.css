@@ -23,3 +23,5 @@
 .s{color: #cc2222;} /* string */
 .se{color: #cc2222; font-weight: bold;}
 .si{color: #C06688; font-weight: bold;}
+
+blockquote {border-left-color: #EEEEEE; border-left-style: solid; border-left-width: 5px; margin: 0 0 20px; padding: 10px 20px;}
