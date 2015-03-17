@@ -1,0 +1,115 @@
+\documentclass[10pt]{article}
+
+% Add header
+\usepackage{fancyhdr}
+\fancypagestyle{first}{
+  \fancyhf{}
+  \fancyhead[L]{Conceptualization of\\Data Standards}
+  \fancyhead[R]{csiu\\2015-03-23}
+}
+\thispagestyle{first}
+
+% Setup margins
+\addtolength{\topmargin}{-0.5in}
+\addtolength{\textheight}{0.75in}
+
+% Flow chart!
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,calc}
+% Define layers to draw the diagram
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+
+\begin{document}
+\vspace*{10px}
+
+
+\tikzstyle{line} = [draw, very thick, color=black!50, -latex']
+\tikzstyle{data} = [rectangle, draw, fill=blue!20, text centered, rounded corners,
+                    minimum height=4em]
+\tikzstyle{user} = [rectangle, draw, fill=white, text width=7em, text centered, rounded corners,
+                    minimum height=4em]
+\tikzstyle{webint}   = [rectangle, draw, fill=blue!8, text centered, rounded corners,
+                        minimum height=4em, align=left]
+\tikzstyle{ontology} = [rectangle, draw, fill=red!20, text centered, rounded corners,
+                        minimum height=4em, align=left]
+\tikzstyle{storage}  = [circle, draw, fill=blue!30, text width=5em, text centered, rounded corners,
+                        minimum height=3em, align=center]
+\tikzstyle{analysis} = [cloud, draw=blue!30, fill=white, cloud puffs=15.7, line width=1.5pt,
+                        align=center]
+
+
+\begin{tikzpicture}[scale=2, node distance=2.5cm, auto]
+    % Place nodes
+    \node [data, text width=9em] (collab) at (0,0) {
+    Collaborator/ Data provider
+    (data produced from instruments
+    to be uploaded)};
+
+    \node [user, below left of=collab]  (user)  at (-1,0.5) {User};
+    \node [user, below right of=collab] (euser) at ( 1,0.5) {Knowledgeable user};
+    \coordinate (userMiddle) at ($(user)!0.5!(euser)$);
+
+    \node [webint, below of=userMiddle] (ui) {
+    Web interface/service\\
+    - security\\
+    - ensure recieve min info};
+
+    \node [ontology, left of=ui] at (-1,-2.8) (ontology) {
+    Ontology\\
+    - RDF/OWL format\\
+    - either created by\\
+    e.g. protege or from\\
+    preexisting ontology\\
+    - for standardizing\\
+    vocabulary (e.g.\\
+    to create meta-data)\\
+    - query by SPARQL};
+
+    \node [data, below of=ui, align=left] at (0.75,-2.5) (d) {
+    Single data submission\\
+    1. DOI\\
+    2. Meta-data (ISA-Tab)\\
+    3. Raw data (binary;\\
+    include header with\\
+    machine parameters)};
+
+    \node [storage, below of=d] at (-0.25,-4.25) (gdb) {Graph\\database};
+    \node [storage, below of=d] at  (1.75,-4.25)  (fs) {File\\system};
+    \coordinate (storeMid) at ($(gdb)!0.5!(fs) - (0,0.45)$);
+    \node [analysis, below of=storeMid] (ana) {Data\\analysis};
+
+    % Draw edges
+    \path [line] (collab) -- node[align=left] {Data upload\\(gets DOI)} (ui);
+    \path [line,dashed]  (user) |- node[align=center] {Data/result\\exploration\\via GUI} (ui);
+    \path [line,dashed] (euser) |- node[align=center] {Data access via\\REST API} (ui);
+    \path [line] (ui) -- node {Uses} (ontology);
+    \path [line,ultra thick,bend right,font=\bf] (ui) edge[black] node {Data Exchange} (d);
+    \path [line] (d)  -- node[align=left] {Storage:\\1, 2} (gdb);
+    \path [line] (d)  -- node[align=left] {Storage: 3}     (fs);
+
+    \coordinate (anaMid) at ($(gdb)!0.5!(fs) - (0,0.85)$);
+    \path [line,bend left] (gdb)  edge[blue!30]
+            node[label={[shift={(anaMid)}, align=center]Info used in\\data analysis}]{}
+            (ana);
+    \path [line,bend right] (fs)  edge[blue!30] (ana);
+    \path [line,bend right] (ana) edge node[align=right] {results} (fs);
+
+    \begin{pgfonlayer}{background}
+        % Left-top corner of the background rectangle
+        \path (gdb.west |- d.north)+(-0.25,0.4) node (a1) {};
+        % Right-bottom corner of the background rectanle
+        \path (fs.east |- ana.south)+(+0.25,-0.25) node (a2) {};
+        % Draw the background
+        \path[fill=yellow!20, rounded corners, draw=black!50, dashed]
+          (a1) rectangle (a2);
+          \path (d.east |- d.north)+(-0.5,0.75)--(d.west |- d.north)
+            node[midway] (bg1-n) {Centralized database};
+    \end{pgfonlayer}
+
+    \path [line,ultra thick,bend right] (bg1-n) edge[black] (ui);
+
+\end{tikzpicture}
+\end{document}
