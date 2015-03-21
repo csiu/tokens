@@ -1,0 +1,85 @@
+\documentclass[10pt]{article}
+
+\usepackage{fancyhdr}
+\fancypagestyle{first}{
+  \fancyhf{}
+  \fancyhead[L]{Workflow for\\Phylogenetic Tree Construction}
+  \fancyhead[R]{csiu\\2015-03-22}
+}
+\thispagestyle{first}
+
+% Setup margins
+\addtolength{\topmargin}{-0.5in}
+\addtolength{\textheight}{0.75in}
+
+% Flow chart!
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,calc,decorations.pathreplacing,positioning}
+\usepackage{amsmath}
+
+\begin{document}
+\vspace*{10px}
+
+\tikzstyle{line} = [draw, very thick, color=black!50, -latex']
+\tikzstyle{formats} = [rectangle, draw, fill=white, text width=5.5em, text centered,
+                        rounded corners, minimum height=3em, align=center, dashed]
+\tikzstyle{format}  = [rectangle, draw, fill=white, text width=5.5em, text centered,
+                        rounded corners, minimum height=3em, align=center]
+\tikzstyle{result}  = [diamond, draw, fill=white, text width=5.5em, text centered, aspect=2]
+
+\begin{tikzpicture}[scale=2, node distance=2.5cm and 4cm, auto]
+    % Place nodes
+    \node [formats, line width=2pt, text width=9em] (fa) {FASTQ\\WGS data\\of multiple isolates};
+    \coordinate (refpos) at ($(fa) + (0.75,0)$);
+    \node [format, right of=refpos, text width=9em] (ref) {FASTA\\(reference genome)};
+    \node [formats, below of=fa] (sam) {SAM};
+    \node [formats, below of=sam] (bam) {BAM};
+    \coordinate (b) at ($(bam) - (2,0)$);
+    \node [formats] at (b) (bai) {BAI};
+    \coordinate (vcf2) at ($(bam)!0.5!(bai) - (0,2)$);
+    \node [formats, text width=9em] at (vcf2) (vcf)
+        {VCF\\genomic variants\\to distinguish\\the isolates};
+    \node [format, below of=vcf] (fa2) {FASTA};
+    \node [format, below of=fa2, text width=9em] (phyl) {PHYLIP\\multiple alignment\\format};
+    \coordinate (t) at ($(phyl) - (0,1.5)$);
+    \node [result, line width=2pt] at (t) (tree) {Phylogenetic tree};
+
+    % Draw edges
+    \path [line] (fa) -- node {Bowtie} (sam);
+    \path [line] (sam) -- node {SAMtools} (bam);
+    \path [line] (bam) -- node [above] {SAMtools} (bai);
+    \path [line] (vcf) -- node {...} (fa2);
+    \path [line] (fa2) -- node {MUSCLE} (phyl);
+    \path [line] (phyl) -- node {PHYLIP} (tree);
+
+    \draw [line] (ref.south) -- ++(-0.5,-0.5) -| (sam);
+    \draw [line] (bai.south) -- ++(0,-0.5) -| (vcf);
+    \draw [line] (bam.south) -- ++(0,-0.5) node [above left] {mutationSeq} -| (vcf);
+    \draw [line] (ref.south) -- ++(0,-3) -| (vcf);
+
+    % pseudocode
+    \coordinate (vcf2fa) at ($(vcf)!0.5!(fa2) + (3.25,0)$);
+    \node [align=left] at (vcf2fa) (prep) {\\
+    def nucleotide(position, bam):\\
+    \indent base $\leftarrow$ use SAMtools to identify nucleotide\\
+    \indent\indent\indent at position in sample.bam\\
+    \indent return base\\
+    \\
+    coreSNVs $\leftarrow$ set of SNV positions from all samples.vcf\\
+    initialize new outfile\\
+    for each sample:\\
+    \indent for each position in coreSNVs:\\
+    \indent\indent seq = seq + nucleotide(position, sample.bam)\\
+    \indent write to outfile: \textgreater sampleID\\
+    \indent write to outfile: seq\\
+    };
+    \draw[decoration={brace,amplitude=10pt},decorate] (prep.south west) -- (prep.north west);
+
+    % description
+    \node [right=1.4cm of tree, text width=22em] {\textbf{Figure} depicting the
+        construction of a phylogenetic tree from WGS data from multiple isolates.
+        Boxes in a dashed line refers to multiple files whereas
+        boxes in a solid line refers to a single file.};
+
+\end{tikzpicture}
+\end{document}
